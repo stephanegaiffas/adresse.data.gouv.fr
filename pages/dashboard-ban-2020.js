@@ -62,7 +62,12 @@ function DashboardBan2020({departements}) {
   return (
     <Page title={title} description={description} showFooter={false}>
       <div className='ban-map-container'>
-        <Mapbox error={error} loading={isLoading} bbox={bbox}>
+        <Mapbox
+          error={error}
+          loading={isLoading}
+          bbox={bbox}
+          hasSwitchStyle={false}
+        >
           {({...mapboxProps}) => (
             <BANMap
               {...mapboxProps}
