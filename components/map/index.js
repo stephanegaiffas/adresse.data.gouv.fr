@@ -170,7 +170,7 @@ const Map = ({defaultCenter, defaultZoom}) => {
         .map-container {
           width: 100%;
           position: relative;
-          height: calc(100vh - 73px);
+          height: calc(100vh - 78px);
         }
 
         @media (max-width: 700px) {

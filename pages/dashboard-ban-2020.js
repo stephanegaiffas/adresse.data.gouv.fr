@@ -61,7 +61,6 @@ function DashboardBan2020({departements}) {
 
   return (
     <Page title={title} description={description} showFooter={false}>
-
       <div className='ban-map-container'>
         <Mapbox error={error} loading={isLoading} bbox={bbox}>
           {({...mapboxProps}) => (
@@ -85,7 +84,7 @@ function DashboardBan2020({departements}) {
 
         .ban-map-container {
           width: 100%;
-          height: calc(100vh - 73px);
+          height: calc(100vh - 78px);
         }
 
         @media (max-width: 380px) {
