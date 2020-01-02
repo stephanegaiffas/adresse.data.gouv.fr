@@ -19,19 +19,66 @@ const BanStats = ({properties}) => {
   const banLOOnlyRatio = roundNb(properties['ban-lo-only-ratio'])
 
   return (
-    <div>
+    <div className='tools ban-stats'>
       <h3>{properties.nom} - {properties.code}</h3>
       <p>
         <b>{total}</b> adresses uniques
       </p>
       {properties.total > 0 && (
         <ul>
-          <li><b>{banV0Only}</b> présentes uniquement dans la BAN v0 {banV0OnlyRatio && (<b>{banV0OnlyRatio}%</b>)}</li>
-          <li><b>{banLOOnly}</b> présentes uniquement dans la BAN LO {banLOOnlyRatio && (<b>{banLOOnlyRatio}%</b>)}</li>
-          <li><b>{both}</b> présentes dans la BAN v0 et la BAN LO</li>
-          <li><b>{pseudoAdresse}</b> pseudo-adresses</li>
+          <li>
+            <b>{banV0Only}</b>{' '}
+            <span className='more'>
+              présentes uniquement dans la
+            </span> BAN v0 {banV0OnlyRatio && (<b>({banV0OnlyRatio}%)</b>)}
+          </li>
+          <li>
+            <b>{banLOOnly}</b>{' '}
+            <span className='more'>
+              présentes uniquement dans la
+            </span> BAN LO {banLOOnlyRatio && (<b>({banLOOnlyRatio}%)</b>)}
+          </li>
+          <li>
+            <b>{both}</b>{' '}
+            <span className='more'>
+              présentes dans la
+            </span> BAN v0 et la BAN LO
+          </li>
+          <li>
+            <b>{pseudoAdresse}</b> pseudo-adresses</li>
         </ul>
       )}
+
+      <style jsx>{`
+        .tools {
+          position: absolute;
+          z-index: 999;
+          background: #ffffffbb;
+          padding: 0.5em;
+          margin: 0.5em;
+          border-radius: 4px;
+          top:
+        }
+
+        .ban-stats {
+          max-width: calc(100% - 55px);
+        }
+
+        ul {
+          padding-inline: 2em;
+          line-height: 1.4em;
+        }
+
+        @media (max-width: 620px) {
+          .ban-stats {
+            font-size: small;
+          }
+
+          .more {
+            display: none;
+          }
+        }
+        `}</style>
     </div>
   )
 }

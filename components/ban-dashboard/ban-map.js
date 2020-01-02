@@ -1,4 +1,4 @@
-import React, {useEffect, useCallback} from 'react'
+import React, {useState, useEffect, useCallback} from 'react'
 import PropTypes from 'prop-types'
 
 import BanStats from './ban-stats'
@@ -10,7 +10,9 @@ import useLayers, {COLORS, fillColor, unSelectFillColor} from './hooks/layers'
 
 let hoveredStateId = null
 
-function BANMap({map, departements, communes, selectDepartement, reset, setSources, setLayers, setInfos, setTools}) {
+function BANMap({map, departements, communes, selectDepartement, reset, setSources, setLayers, setInfos}) {
+  const [stats, setStats] = useState(null)
+
   const sources = useSources(departements, communes)
   const layers = useLayers(departements, communes)
 
@@ -35,7 +37,7 @@ function BANMap({map, departements, communes, selectDepartement, reset, setSourc
 
       hoveredStateId = id
 
-      setTools(<BanStats properties={properties} />)
+      setStats(properties)
 
       if (source === 'departements') {
         map.getCanvas().style.cursor = 'pointer'
@@ -102,7 +104,16 @@ function BANMap({map, departements, communes, selectDepartement, reset, setSourc
     ) : null)
   }, [communes, setInfos, unSelectDepartement])
 
-  return <Legend colors={COLORS} />
+  return (
+    <>
+      <Legend colors={COLORS} />
+      {stats && (
+        <div style={{marginTop: communes ? '50px' : '0'}}>
+          <BanStats properties={stats} />
+        </div>
+      )}
+    </>
+  )
 }
 
 BANMap.propTypes = {
@@ -113,8 +124,7 @@ BANMap.propTypes = {
   reset: PropTypes.func.isRequired,
   setSources: PropTypes.func.isRequired,
   setLayers: PropTypes.func.isRequired,
-  setInfos: PropTypes.func.isRequired,
-  setTools: PropTypes.func.isRequired
+  setInfos: PropTypes.func.isRequired
 }
 
 BANMap.defaultProps = {

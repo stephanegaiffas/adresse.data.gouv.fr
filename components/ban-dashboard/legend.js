@@ -21,14 +21,14 @@ const Legend = ({colors}) => (
       z-index: 999;
       background: #ffffffbb;
       padding: 0.5em;
-      margin: 1em;
+      margin: 0.5em;
       border-radius: 4px;
     }
 
     .legend {
       display: flex;
       flex-direction: column;
-      bottom: -5px;
+      bottom: 0;
       left: 0;
     }
 
@@ -56,11 +56,17 @@ const Legend = ({colors}) => (
     @media (max-width: 620px) {
       .legend {
         left: 0;
-        width: calc(100% - 60px);
+        bottom: 0;
+        margin: 0.5em;
+        width: calc(100% - 50px);
       }
 
-      .legend {
-        bottom: -5px;
+      .legend .title {
+        font-size: x-small;
+      }
+
+      .legend .color-label {
+        font-size: xx-small;
       }
     }
   `}</style>
