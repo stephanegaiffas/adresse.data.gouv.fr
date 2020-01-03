@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {contoursToGeoJson} from '../../../../lib/geojson'
+import {contoursToGeoJson, communeContour} from '../../../../lib/geojson'
 import {spaceThousands} from '../../../../lib/format-numbers'
 
 import InfoReport from '../info-report'
@@ -43,7 +43,7 @@ class CommunesPreview extends React.Component {
     ]
 
     return (
-      <Preview geojson={communes.length > 0 ? contoursToGeoJson(communes) : null}>
+      <Preview geojson={communes.length > 0 ? contoursToGeoJson(communes, communeContour) : null}>
         <div className='meta'>
           {infos.map(info => (
             <div key={info.title}>
