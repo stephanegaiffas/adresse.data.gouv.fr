@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useCallback} from 'react'
 import PropTypes from 'prop-types'
 
-import BanStats from './ban-stats'
+import CommuneStats from './commune-stats'
+import DepartementStats from './departement-stats'
 import Legend from './legend'
 import Back from './back'
 
@@ -11,18 +12,21 @@ import useLayers, {COLORS, fillColor, unSelectFillColor} from './hooks/layers'
 let hoveredStateId = null
 
 function BANMap({map, departements, communes, selectDepartement, reset, setSources, setLayers, setInfos}) {
-  const [stats, setStats] = useState(null)
+  const [selectedFeature, setSelectedFeature] = useState(null)
 
   const sources = useSources(departements, communes)
   const layers = useLayers(departements, communes)
 
   const onClick = e => {
-    const departement = e.features[0].properties
-    map.setFilter('departements-fill', ['!=', ['get', 'code'], departement.code])
-    map.setPaintProperty('departements-fill', 'fill-color', unSelectFillColor)
-    map.setPaintProperty('departements-fill', 'fill-opacity', 0.4)
+    const {codeDepartement} = e.features[0].properties
 
-    selectDepartement(departement.code)
+    if (codeDepartement !== '75') { // "arrondissements" have no contours
+      map.setFilter('departements-fill', ['!=', ['get', 'codeDepartement'], codeDepartement])
+      map.setPaintProperty('departements-fill', 'fill-color', unSelectFillColor)
+      map.setPaintProperty('departements-fill', 'fill-opacity', 0.4)
+
+      selectDepartement(codeDepartement)
+    }
   }
 
   const onHover = e => {
@@ -37,10 +41,11 @@ function BANMap({map, departements, communes, selectDepartement, reset, setSourc
 
       hoveredStateId = id
 
-      setStats(properties)
+      setSelectedFeature(properties)
 
       if (source === 'departements') {
-        map.getCanvas().style.cursor = 'pointer'
+        const cursor = properties.codeDepartement === '75' ? 'default' : 'pointer'
+        map.getCanvas().style.cursor = cursor
       }
 
       map.setFeatureState({source, id: hoveredStateId}, {hover: true})
@@ -56,11 +61,13 @@ function BANMap({map, departements, communes, selectDepartement, reset, setSourc
 
       map.getCanvas().style.cursor = 'default'
       hoveredStateId = null
+      setSelectedFeature(null)
     }
   }
 
   const unSelectDepartement = useCallback(() => {
     map.setFilter('departements-fill', ['!=', ['get', 'code'], 0])
+    map.setPaintProperty('departements-fill', 'fill-opacity', 0.8)
     map.setCenter([1.7, 46.9])
     map.setZoom(5)
 
@@ -107,9 +114,17 @@ function BANMap({map, departements, communes, selectDepartement, reset, setSourc
   return (
     <>
       <Legend colors={COLORS} />
-      {stats && (
+      {selectedFeature && (
         <div style={{marginTop: communes ? '50px' : '0'}}>
-          <BanStats properties={stats} />
+          {selectedFeature.codeCommune ? (
+            <CommuneStats
+              {...communes.features.find(f => f.properties.codeCommune === selectedFeature.codeCommune).properties}
+            />
+          ) : (
+            <DepartementStats
+              {...departements.features.find(f => f.properties.codeDepartement === selectedFeature.codeDepartement).properties}
+            />
+          )}
         </div>
       )}
     </>

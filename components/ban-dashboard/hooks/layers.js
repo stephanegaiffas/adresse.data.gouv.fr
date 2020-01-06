@@ -11,7 +11,7 @@ export const COLORS = {
 
 export const fillColor = [
   'step',
-  ['get', 'ecart'],
+  ['/', ['get', 'communesWithWarnings'], ['get', 'communesCount']],
   COLORS.green,
   0.05,
   COLORS.yellow,
@@ -22,6 +22,22 @@ export const fillColor = [
   0.4,
   COLORS.purple,
   1,
+  '#000'
+]
+
+export const communeFillColor = [
+  'step',
+  ['get', 'adressesRatio'],
+  COLORS.green,
+  0,
+  COLORS.yellow,
+  100,
+  COLORS.orange,
+  400,
+  COLORS.red,
+  600,
+  COLORS.purple,
+  800,
   '#000'
 ]
 
@@ -41,37 +57,6 @@ const lineLayerPaint = {
   ]
 }
 
-const fillLayerPaint = {
-  'fill-color': fillColor,
-  'fill-opacity': [
-    'interpolate',
-    ['exponential', 0.1],
-    ['get', 'total'],
-    0,
-    0,
-    1,
-    0.1,
-    200,
-    0.2,
-    400,
-    0.3,
-    800,
-    0.4,
-    1000,
-    0.5,
-    5000,
-    0.6,
-    10000,
-    0.7,
-    50000,
-    0.8,
-    100000,
-    0.9,
-    200000,
-    1
-  ]
-}
-
 export default function useLayers(departements, communes) {
   return useMemo(() => {
     const layers = []
@@ -81,7 +66,10 @@ export default function useLayers(departements, communes) {
         id: 'departements-fill',
         source: 'departements',
         type: 'fill',
-        paint: fillLayerPaint
+        paint: {
+          'fill-color': fillColor,
+          'fill-opacity': 0.8
+        }
       })
       layers.push({
         id: 'departements-line',
@@ -96,7 +84,10 @@ export default function useLayers(departements, communes) {
         id: 'communes-fill',
         source: 'communes',
         type: 'fill',
-        paint: fillLayerPaint
+        paint: {
+          'fill-color': communeFillColor,
+          'fill-opacity': 0.8
+        }
       })
       layers.push({
         id: 'communes-line',

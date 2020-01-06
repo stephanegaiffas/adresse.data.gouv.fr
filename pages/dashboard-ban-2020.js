@@ -11,21 +11,60 @@ import {getDepartements, getDepartementCommunes} from '../lib/api-ban'
 import Mapbox from '../components/mapbox'
 
 import BANMap from '../components/ban-dashboard/ban-map'
+import {contoursToGeoJson} from '../lib/geojson'
 
 const title = 'Base Adresse National 2020 - Tableau de bord'
 const description = ''
 
-function generateId(feature) {
-  const {code} = feature.properties
-  feature.id = feature.properties.code
+function generateDepartementId(code) {
+  let id = code
 
   // Corse
   if (code === '2A') {
-    feature.id = 200
+    id = 200
   } else if (code === '2B') {
-    feature.id = 201
+    id = 201
   } else {
-    feature.id = code.replace(/[AB]/, 0)
+    id = code.replace(/[AB]/, 0)
+  }
+
+  return id
+}
+
+function departementContour(departement) {
+  const {contour, codeDepartement, ...otherProps} = departement
+
+  return {
+    id: generateDepartementId(codeDepartement),
+    type: 'Feature',
+    geometry: contour,
+    properties: {
+      codeDepartement,
+      ...otherProps
+    }
+  }
+}
+
+function communeContour(commune) {
+  const {contour, codeCommune, ...otherProps} = commune
+
+  return {
+    id: codeCommune,
+    type: 'Feature',
+    geometry: contour,
+    properties: {
+      codeCommune,
+      ...otherProps
+    }
+  }
+}
+
+export function contoursDepartementsToGeoJson(departements) {
+  const departementsWithCtr = departements.filter(dep => dep.contour)
+
+  return {
+    type: 'FeatureCollection',
+    features: departementsWithCtr.map(dep => departementContour(dep))
   }
 }
 
@@ -41,8 +80,8 @@ function DashboardBan2020({departements}) {
 
     try {
       const departement = await getDepartementCommunes(codeDepartement)
-      departement.features.forEach(generateId)
-      setDepartement(departement)
+      const geojson = contoursToGeoJson(departement.communes, communeContour)
+      setDepartement(geojson)
     } catch (error) {
       setError(error.message)
     }
@@ -107,11 +146,11 @@ DashboardBan2020.propTypes = {
 }
 
 DashboardBan2020.getInitialProps = async () => {
-  const departements = await getDepartements()
-  departements.features.forEach(generateId)
+  const {departements} = await getDepartements()
+  const geojson = contoursToGeoJson(departements, departementContour)
 
   return {
-    departements
+    departements: geojson
   }
 }
 
