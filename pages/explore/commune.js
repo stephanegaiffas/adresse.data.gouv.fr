@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {getCommune} from '../../lib/api-geo'
-import {getCommune as getCommuneExplore} from '../../lib/explore/api'
+import {getCommune as getCommuneExplore} from '../../lib/api-explore'
 
 import Page from '../../layouts/main'
 import Section from '../../components/section'

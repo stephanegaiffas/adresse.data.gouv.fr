@@ -6,7 +6,7 @@ import computeBbox from '@turf/bbox'
 import Page from '../layouts/main'
 
 import {contoursToGeoJson} from '../lib/geojson'
-import {getDepartements, getDepartementCommunes} from '../lib/api-ban'
+import {getDepartements, getDepartementCommunes} from '../lib/api-explore'
 
 import Mapbox from '../components/mapbox'
 import BANMap from '../components/explorer/ban-map'

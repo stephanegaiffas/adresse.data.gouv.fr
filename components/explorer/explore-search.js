@@ -2,7 +2,7 @@ import React, {useState, useCallback, useEffect} from 'react'
 import Router from 'next/router'
 import {debounce} from 'lodash'
 
-import {search} from '../../lib/explore/api'
+import {search} from '../../lib/api-explore'
 import {useInput} from '../../hooks/input'
 
 import SearchInput from '../search-input'

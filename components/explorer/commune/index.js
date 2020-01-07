@@ -4,7 +4,7 @@ import computeBbox from '@turf/bbox'
 
 import theme from '../../../styles/theme'
 
-import {getCommune} from '../../../lib/explore/api'
+import {getCommune} from '../../../lib/api-explore'
 
 import Mapbox from '../../mapbox'
 import AddressesMap from '../../mapbox/addresses-map'

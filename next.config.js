@@ -5,10 +5,8 @@ const withConfig = nextRuntimeDotenv({
   public: [
     'BACKEND_URL',
     'API_GEO_URL',
-    'BAN_DASHBOARD_URL',
     'API_ADRESSE',
-    'API_EXPLORE_URL',
-    'API_EXPLORE_SEARCH_URL',
+    'API_EXPLORE',
     'PIWIK_URL',
     'PIWIK_SITE_ID',
     'BACKEND_PUBLICATION'

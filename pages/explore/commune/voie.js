@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import Page from '../../../layouts/main'
 
-import {getVoie, getNumero} from '../../../lib/explore/api'
+import {getVoie, getNumero} from '../../../lib/api-explore'
 
 import withErrors from '../../../components/hoc/with-errors'
 
