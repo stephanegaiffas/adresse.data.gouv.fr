@@ -11,13 +11,13 @@ import useLayers, {COLORS, fillColor, unSelectFillColor} from './hooks/layers'
 
 let hoveredStateId = null
 
-function BANMap({map, departements, communes, selectDepartement, reset, setSources, setLayers, setInfos}) {
+function BANMap({map, departements, communes, selectDepartement, selectCommune, reset, setSources, setLayers, setInfos}) {
   const [selectedFeature, setSelectedFeature] = useState(null)
 
   const sources = useSources(departements, communes)
   const layers = useLayers(departements, communes)
 
-  const onClick = e => {
+  const handleClickDepartement = e => {
     const {codeDepartement} = e.features[0].properties
 
     if (codeDepartement !== '75') { // "arrondissements" have no contours
@@ -27,6 +27,11 @@ function BANMap({map, departements, communes, selectDepartement, reset, setSourc
 
       selectDepartement(codeDepartement)
     }
+  }
+
+  const handleClickCommune = e => {
+    const {codeCommune} = e.features[0].properties
+    selectCommune(codeCommune)
   }
 
   const onHover = e => {
@@ -43,10 +48,8 @@ function BANMap({map, departements, communes, selectDepartement, reset, setSourc
 
       setSelectedFeature(properties)
 
-      if (source === 'departements') {
-        const cursor = properties.codeDepartement === '75' ? 'default' : 'pointer'
-        map.getCanvas().style.cursor = cursor
-      }
+      const cursor = properties.codeDepartement === '75' ? 'default' : 'pointer'
+      map.getCanvas().style.cursor = cursor
 
       map.setFeatureState({source, id: hoveredStateId}, {hover: true})
     }
@@ -83,18 +86,20 @@ function BANMap({map, departements, communes, selectDepartement, reset, setSourc
   useEffect(() => {
     map.on('mousemove', 'departements-fill', onHover)
     map.on('mouseleave', 'departements-fill', onLeave)
-    map.on('click', 'departements-fill', onClick)
+    map.on('click', 'departements-fill', handleClickDepartement)
 
     map.on('mousemove', 'communes-fill', onHover)
     map.on('mouseleave', 'communes-fill', onLeave)
+    map.on('click', 'communes-fill', handleClickCommune)
 
     return () => {
       map.off('mousemove', 'departements-fill', onHover)
       map.off('mouseleave', 'departements-fill', onLeave)
-      map.off('click', 'departements-fill', onClick)
+      map.off('click', 'departements-fill', handleClickDepartement)
 
       map.off('mousemove', 'communes-fill', onHover)
       map.off('mouseleave', 'communes-fill', onLeave)
+      map.off('click', 'communes-fill', handleClickCommune)
     }
 
     // No dependency in order to mock a didMount and avoid duplicating events.
@@ -136,6 +141,7 @@ BANMap.propTypes = {
   departements: PropTypes.object,
   communes: PropTypes.object,
   selectDepartement: PropTypes.func.isRequired,
+  selectCommune: PropTypes.func.isRequired,
   reset: PropTypes.func.isRequired,
   setSources: PropTypes.func.isRequired,
   setLayers: PropTypes.func.isRequired,

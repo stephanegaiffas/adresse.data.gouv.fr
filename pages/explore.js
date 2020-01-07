@@ -5,60 +5,91 @@ import computeBbox from '@turf/bbox'
 
 import Page from '../layouts/main'
 
+import {contoursToGeoJson} from '../lib/geojson'
 import {getDepartements, getDepartementCommunes} from '../lib/api-ban'
 
 import Mapbox from '../components/mapbox'
-import ContourMap from '../components/explorer/contour-map'
+import BANMap from '../components/explorer/ban-map'
 import Header from '../components/explorer/header'
 
 const title = 'Consulter'
 const description = 'Consulter les adresses'
 
-function generateDepartementId(feature) {
-  const {code} = feature.properties
-  feature.id = feature.properties.code
+function generateDepartementId(code) {
+  let id = code
 
   // Corse
   if (code === '2A') {
-    feature.id = 200
+    id = 200
   } else if (code === '2B') {
-    feature.id = 201
+    id = 201
   } else {
-    feature.id = code.replace(/[AB]/, 0)
+    id = code.replace(/[AB]/, 0)
+  }
+
+  return id
+}
+
+function departementContour(departement) {
+  const {contour, codeDepartement, ...otherProps} = departement
+
+  return {
+    id: generateDepartementId(codeDepartement),
+    type: 'Feature',
+    geometry: contour,
+    properties: {
+      codeDepartement,
+      ...otherProps
+    }
   }
 }
 
-function generateCommuneId(feature) {
-  feature.id = feature.properties.code
+function communeContour(commune) {
+  const {contour, codeCommune, ...otherProps} = commune
+
+  return {
+    id: codeCommune,
+    type: 'Feature',
+    geometry: contour,
+    properties: {
+      codeCommune,
+      ...otherProps
+    }
+  }
+}
+
+export function contoursDepartementsToGeoJson(departements) {
+  const departementsWithCtr = departements.filter(dep => dep.contour)
+
+  return {
+    type: 'FeatureCollection',
+    features: departementsWithCtr.map(dep => departementContour(dep))
+  }
 }
 
 const Explore = ({departements}) => {
   const [communes, setCommunes] = useState(null)
-  const [selected, setSeleted] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [bbox, setBbox] = useState(null)
   const [error, setError] = useState(null)
-  const bbox = communes ? computeBbox(communes) : null
 
-  const selectDepartement = async feature => {
-    const codeDepartement = feature.id
+  const loadDepartement = async codeDepartement => {
+    setIsLoading(true)
     setError(null)
-    setSeleted(null)
-    setLoading(true)
 
     try {
-      const communes = await getDepartementCommunes(codeDepartement)
-      communes.features.forEach(generateCommuneId)
-      setCommunes(communes)
+      const departement = await getDepartementCommunes(codeDepartement)
+      const geojson = contoursToGeoJson(departement.communes, communeContour)
+      setCommunes(geojson)
     } catch (error) {
       setError(error.message)
     }
 
-    setLoading(false)
+    setIsLoading(false)
   }
 
-  const selectCommune = feature => {
-    const codeCommune = feature.id
-    const href = `/explore/commune/?codeCommune=${codeCommune}`
+  const selectCommune = codeCommune => {
+    const href = `/commune?codeCommune=${codeCommune}`
     const as = `/explore/commune/${codeCommune}`
 
     Router.push(href, as)
@@ -67,34 +98,31 @@ const Explore = ({departements}) => {
   const reset = () => {
     setCommunes(null)
     setError(null)
-    setLoading(false)
+    setIsLoading(false)
   }
 
   useEffect(() => {
-    async function fetchData() {
-      await selectDepartement(selected)
-    }
-
-    if (selected) {
-      if (communes) {
-        selectCommune(selected)
-      } else {
-        fetchData()
-      }
-    }
-  }, [selected, communes])
+    setBbox(communes ? computeBbox(communes) : null)
+  }, [communes])
 
   return (
     <Page title={title} description={description} showFooter={false}>
       <Header />
       <div className='explore-map-container'>
-        <Mapbox error={error} bbox={bbox} loading={loading} switchStyle>
+        <Mapbox
+          error={error}
+          loading={isLoading}
+          bbox={bbox}
+          hasSwitchStyle={false}
+        >
           {({...mapboxProps}) => (
-            <ContourMap
+            <BANMap
               {...mapboxProps}
-              contour={communes || departements}
-              onSelectContour={setSeleted}
-              reset={communes ? reset : null}
+              departements={departements}
+              communes={communes}
+              selectDepartement={loadDepartement}
+              selectCommune={selectCommune}
+              reset={reset}
             />
           )}
         </Mapbox>
@@ -114,12 +142,11 @@ Explore.propTypes = {
 }
 
 Explore.getInitialProps = async () => {
-  const departements = await getDepartements()
-
-  departements.features.forEach(generateDepartementId)
+  const {departements} = await getDepartements()
+  const geojson = contoursToGeoJson(departements, departementContour)
 
   return {
-    departements
+    departements: geojson
   }
 }
 
