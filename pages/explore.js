@@ -11,9 +11,57 @@ import {getDepartements, getDepartementCommunes} from '../lib/api-explore'
 import Mapbox from '../components/mapbox'
 import BANMap from '../components/explorer/ban-map'
 import Header from '../components/explorer/header'
+import {COLORS} from '../components/explorer/ban-map/hooks/layers'
 
 const title = 'Consulter'
 const description = 'Consulter les adresses'
+
+const colorBigCommune = ratio => {
+  let color = COLORS.black
+
+  if (ratio < 100) {
+    color = COLORS.green
+  } else if (ratio < 500) {
+    color = COLORS.yellow
+  } else if (ratio < 800) {
+    color = COLORS.orange
+  } else if (ratio < 1000) {
+    color = COLORS.red
+  } else if (ratio < 1500) {
+    color = COLORS.purple
+  }
+
+  return color
+}
+
+const colorLittleCommune = ratio => {
+  let color = COLORS.black
+
+  if (ratio < 10) {
+    color = COLORS.green
+  } else if (ratio < 50) {
+    color = COLORS.yellow
+  } else if (ratio < 100) {
+    color = COLORS.orange
+  } else if (ratio < 300) {
+    color = COLORS.red
+  } else if (ratio < 500) {
+    color = COLORS.purple
+  }
+
+  return color
+}
+
+function colorCommune(commune) {
+  const {type, population, adressesRatio} = commune
+  if (type === 'bal') {
+    commune.color = COLORS.green
+  } else if (population > 10000) {
+    commune.color = colorBigCommune(adressesRatio)
+  } else {
+    commune.color = colorLittleCommune(adressesRatio)
+  }
+}
 
 function generateDepartementId(code) {
   let id = code
@@ -79,6 +127,7 @@ const Explore = ({departements}) => {
 
     try {
       const departement = await getDepartementCommunes(codeDepartement)
+      departement.communes.forEach(colorCommune)
       const geojson = contoursToGeoJson(departement.communes, communeContour)
       setCommunes(geojson)
     } catch (error) {

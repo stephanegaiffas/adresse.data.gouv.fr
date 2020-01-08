@@ -10,35 +10,26 @@ export const COLORS = {
 }
 
 export const fillColor = [
-  'step',
+  'let',
+  'warning',
   ['/', ['get', 'communesWithWarnings'], ['get', 'communesCount']],
-  COLORS.green,
-  0.05,
-  COLORS.yellow,
-  0.1,
-  COLORS.orange,
-  0.2,
-  COLORS.red,
-  0.4,
-  COLORS.purple,
-  1,
-  '#000'
-]
-
-export const communeFillColor = [
-  'step',
-  ['get', 'adressesRatio'],
-  COLORS.green,
-  0,
-  COLORS.yellow,
-  100,
-  COLORS.orange,
-  400,
-  COLORS.red,
-  600,
-  COLORS.purple,
-  800,
-  '#000'
+  [
+    'interpolate',
+    ['linear'],
+    ['var', 'warning'],
+    0,
+    ['to-color', COLORS.green],
+    0.2,
+    ['to-color', COLORS.yellow],
+    0.4,
+    ['to-color', COLORS.orange],
+    0.6,
+    ['to-color', COLORS.red],
+    0.8,
+    ['to-color', COLORS.purple],
+    1,
+    ['to-color', COLORS.black]
+  ]
 ]
 
 export const unSelectFillColor = [
@@ -85,7 +76,7 @@ export default function useLayers(departements, communes) {
         source: 'communes',
         type: 'fill',
         paint: {
-          'fill-color': communeFillColor,
+          'fill-color': ['get', 'color'],
           'fill-opacity': 0.8
         }
       })
