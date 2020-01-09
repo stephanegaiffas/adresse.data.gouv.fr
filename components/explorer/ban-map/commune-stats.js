@@ -43,6 +43,12 @@ const FeatureStats = ({codeCommune, nomCommune, adressesCount, voiesCount, sourc
           max-width: calc(100% - 55px);
         }
 
+        @media (min-width: 620px) {
+          .feature-stats {
+            max-width: 20%;
+          }
+        }
+
         @media (max-width: 620px) {
           .feature-stats {
             font-size: small;
