@@ -3,11 +3,10 @@ import PropTypes from 'prop-types'
 
 import CommuneStats from './commune-stats'
 import DepartementStats from './departement-stats'
-import Legend from './legend'
 import Back from './back'
 
 import useSources from './hooks/sources'
-import useLayers, {COLORS, fillColor, unSelectFillColor} from './hooks/layers'
+import useLayers, {fillColor, unSelectFillColor} from './hooks/layers'
 
 let hoveredStateId = null
 
@@ -118,7 +117,6 @@ function BANMap({map, departements, communes, selectDepartement, selectCommune, 
 
   return (
     <>
-      <Legend colors={COLORS} />
       {selectedFeature && (
         <div style={{marginTop: communes ? '50px' : '0'}}>
           {selectedFeature.codeCommune ? (
