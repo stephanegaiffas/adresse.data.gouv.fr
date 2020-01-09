@@ -27,16 +27,12 @@ function getCommuneColor(commune) {
     return COLORS.red
   }
 
-  if (adressesCount >= adressesCountTarget * 0.8 && adressesCount <= adressesCountTarget * 1.2) {
+  if (adressesCount >= adressesCountTarget * 0.7 && adressesCount <= adressesCountTarget * 1.3) {
     return COLORS.green
   }
 
-  if (adressesCount >= adressesCountTarget * 0.7 && adressesCount <= adressesCountTarget * 1.3) {
-    return COLORS.yellow
-  }
-
   if (adressesCount >= adressesCountTarget * 0.5 && adressesCount <= adressesCountTarget * 1.5) {
-    return COLORS.orange
+    return COLORS.yellow
   }
 
   return COLORS.red
