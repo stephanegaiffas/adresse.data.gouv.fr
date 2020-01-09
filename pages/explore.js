@@ -132,7 +132,7 @@ const Explore = ({departements}) => {
   }, [communes])
 
   return (
-    <Page title={title} description={description} showFooter={false}>
+    <Page title={title} description={description} hasFooter={false}>
       <Header />
       <div className='explore-map-container'>
         <Mapbox
@@ -156,7 +156,7 @@ const Explore = ({departements}) => {
 
       <style jsx>{`
         .explore-map-container {
-          height: calc(100vh - 350px);
+          height: calc(100vh - 255px);
         }
       `}</style>
     </Page>

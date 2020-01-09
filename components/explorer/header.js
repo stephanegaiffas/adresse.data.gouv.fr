@@ -1,22 +1,21 @@
 import React from 'react'
 
-import Section from '../section'
+import Container from '../container'
 import ExploreSearch from './explore-search'
 
 const Explorer = () => (
-  <Section>
+  <Container>
     <div className='header-section'>
       <h2>Rechercher une commune, une voie ou une adresse</h2>
+      <ExploreSearch />
     </div>
-
-    <ExploreSearch />
 
     <style jsx>{`
         .header-section {
-          margin-top: -3em;
+          padding: 2em 0;
         }
-      `}</style>
-  </Section>
+    `}</style>
+  </Container>
 )
 
 export default Explorer
