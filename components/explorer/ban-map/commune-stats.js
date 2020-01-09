@@ -1,21 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const FeatureStats = ({codeCommune, nomCommune, adressesCount, voiesCount, sources, type, adressesRatio, population}) => {
+const FeatureStats = ({codeCommune, nomCommune, adressesCount, voiesCount, sources, type, adressesCountTarget, population}) => {
   return (
     <div className='tools feature-stats'>
       <div>
         <h3>{nomCommune} - {codeCommune}</h3>
         <ul>
-          <li>{voiesCount} voie{voiesCount > 0 ? 's' : ''}</li>
-          <li>{adressesCount} adresse{adressesCount > 0 ? 's' : ''}</li>
-          <li>{population} habitant{population > 0 ? 's' : ''}</li>
-          <li>adressesRatio: {adressesRatio}</li>
+          <li>{voiesCount} voie{voiesCount > 1 ? 's' : ''}</li>
+          <li>{adressesCount} adresse{adressesCount > 1 ? 's' : ''}</li>
+          <li>{population} habitant{population > 1 ? 's' : ''}</li>
+          <li>Nombre d’adresses cible : {adressesCountTarget}</li>
         </ul>
         <div>
           {type === 'merge' && (
             <>
-              <div>Les adresses de cette commune sont issues d’une fusion des données issues des sources suivantes :</div>
+              <div>Les adresses de cette commune sont issues d’une fusion des données :</div>
               <ul>
                 {sources && sources.map(source => <li key={source}>{source}</li>)}
               </ul>
@@ -23,7 +23,7 @@ const FeatureStats = ({codeCommune, nomCommune, adressesCount, voiesCount, sourc
           )}
 
           {type === 'bal' && (
-            <p>Les adresses sont ont étaient produite par la commune</p>
+            <p>Les adresses sont gérées par la commune</p>
           )}
         </div>
       </div>

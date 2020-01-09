@@ -16,51 +16,30 @@ import {COLORS} from '../components/explorer/ban-map/hooks/layers'
 const title = 'Consulter'
 const description = 'Consulter les adresses'
 
-const colorBigCommune = ratio => {
-  let color = COLORS.black
+function getCommuneColor(commune) {
+  const {adressesCount, population, adressesCountTarget} = commune
 
-  if (ratio < 100) {
-    color = COLORS.green
-  } else if (ratio < 500) {
-    color = COLORS.yellow
-  } else if (ratio < 800) {
-    color = COLORS.orange
-  } else if (ratio < 1000) {
-    color = COLORS.red
-  } else if (ratio < 1500) {
-    color = COLORS.purple
+  if (population === 0) {
+    return COLORS.purple
   }
 
-  return color
-}
-
-const colorLittleCommune = ratio => {
-  let color = COLORS.black
-
-  if (ratio < 10) {
-    color = COLORS.green
-  } else if (ratio < 50) {
-    color = COLORS.yellow
-  } else if (ratio < 100) {
-    color = COLORS.orange
-  } else if (ratio < 300) {
-    color = COLORS.red
-  } else if (ratio < 500) {
-    color = COLORS.purple
+  if (adressesCount === 0) {
+    return COLORS.red
   }
 
-  return color
-}
-
-function colorCommune(commune) {
-  const {type, population, adressesRatio} = commune
-  if (type === 'bal') {
-    commune.color = COLORS.green
-  } else if (population > 10000) {
-    commune.color = colorBigCommune(adressesRatio)
-  } else {
-    commune.color = colorLittleCommune(adressesRatio)
+  if (adressesCount >= adressesCountTarget * 0.8 && adressesCount <= adressesCountTarget * 1.2) {
+    return COLORS.green
   }
+
+  if (adressesCount >= adressesCountTarget * 0.7 && adressesCount <= adressesCountTarget * 1.3) {
+    return COLORS.yellow
+  }
+
+  if (adressesCount >= adressesCountTarget * 0.5 && adressesCount <= adressesCountTarget * 1.5) {
+    return COLORS.orange
+  }
+
+  return COLORS.red
 }
 
 function generateDepartementId(code) {
@@ -127,7 +106,9 @@ const Explore = ({departements}) => {
 
     try {
       const departement = await getDepartementCommunes(codeDepartement)
-      departement.communes.forEach(colorCommune)
+      departement.communes.forEach(c => {
+        c.color = getCommuneColor(c)
+      })
       const geojson = contoursToGeoJson(departement.communes, communeContour)
       setCommunes(geojson)
     } catch (error) {
