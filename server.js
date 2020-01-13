@@ -14,6 +14,13 @@ app.prepare().then(() => {
     server.use(compression())
   }
 
+  server.get('/explore/departement/:code', (req, res) => {
+    app.render(req, res, '/explore', {
+      ...req.query,
+      codeDepartement: req.params.code
+    })
+  })
+
   server.get('/explore/commune/:code', (req, res) => {
     app.render(req, res, '/explore/commune', {
       ...req.query,

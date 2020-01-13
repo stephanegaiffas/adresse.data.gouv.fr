@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
-import Router from 'next/router'
+import {useRouter} from 'next/router'
 import computeBbox from '@turf/bbox'
 
 import Page from '../layouts/main'
@@ -90,11 +90,14 @@ export function contoursDepartementsToGeoJson(departements) {
   }
 }
 
-const Explore = ({departements}) => {
+const Explore = ({departements, codeDepartement}) => {
+  const [departement, setDepartement] = useState(codeDepartement)
   const [communes, setCommunes] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [bbox, setBbox] = useState(null)
   const [error, setError] = useState(null)
+
+  const router = useRouter()
 
   const loadDepartement = async codeDepartement => {
     setIsLoading(true)
@@ -114,22 +117,39 @@ const Explore = ({departements}) => {
     setIsLoading(false)
   }
 
+  const selectDepartement = codeDepartement => {
+    const href = `/explore?codeDepartement=${codeDepartement}`
+    const as = `/explore/departement/${codeDepartement}`
+
+    setDepartement(codeDepartement)
+    router.push(href, as, {shallow: true})
+  }
+
   const selectCommune = codeCommune => {
     const href = `/commune?codeCommune=${codeCommune}`
     const as = `/explore/commune/${codeCommune}`
 
-    Router.push(href, as)
+    router.push(href, as)
   }
 
   const reset = () => {
+    setDepartement(null)
     setCommunes(null)
     setError(null)
     setIsLoading(false)
+
+    router.push('/explore', '/explore', {shallow: true})
   }
 
   useEffect(() => {
     setBbox(communes ? computeBbox(communes) : null)
   }, [communes])
+
+  useEffect(() => {
+    if (departement) {
+      loadDepartement(departement)
+    }
+  }, [departement])
 
   return (
     <Page title={title} description={description} hasFooter={false}>
@@ -146,7 +166,7 @@ const Explore = ({departements}) => {
               {...mapboxProps}
               departements={departements}
               communes={communes}
-              selectDepartement={loadDepartement}
+              selectDepartement={selectDepartement}
               selectCommune={selectCommune}
               reset={reset}
             />
@@ -163,15 +183,22 @@ const Explore = ({departements}) => {
   )
 }
 
-Explore.propTypes = {
-  departements: PropTypes.object.isRequired
+Explore.defaultProps = {
+  codeDepartement: null
 }
 
-Explore.getInitialProps = async () => {
+Explore.propTypes = {
+  departements: PropTypes.object.isRequired,
+  codeDepartement: PropTypes.string
+}
+
+Explore.getInitialProps = async ({query}) => {
+  const {codeDepartement} = query
   const {departements} = await getDepartements()
   const geojson = contoursToGeoJson(departements, departementContour)
 
   return {
+    codeDepartement,
     departements: geojson
   }
 }

@@ -49,6 +49,8 @@ const lineLayerPaint = {
 }
 
 export default function useLayers(departements, communes) {
+  const {codeDepartement} = communes ? communes.features[0].properties : {}
+
   return useMemo(() => {
     const layers = []
 
@@ -57,7 +59,10 @@ export default function useLayers(departements, communes) {
         id: 'departements-fill',
         source: 'departements',
         type: 'fill',
-        paint: {
+        paint: codeDepartement ? {
+          'fill-color': unSelectFillColor,
+          'fill-opacity': 0.4
+        } : {
           'fill-color': fillColor,
           'fill-opacity': 0.8
         }
@@ -89,5 +94,5 @@ export default function useLayers(departements, communes) {
     }
 
     return layers
-  }, [departements, communes])
+  }, [departements, communes, codeDepartement])
 }
