@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Router from 'next/router'
+import {useRouter} from 'next/router'
 
 import Section from '../../section'
 
@@ -9,12 +9,13 @@ import MapContainer from './map-container'
 import AddressesTable from './addresses-table'
 
 const Voie = ({commune, voie, numero}) => {
+  const router = useRouter()
   const handleSelect = (numero, suffixe) => {
-    const {codeCommune, idVoie} = Router.query
+    const {codeCommune, idVoie} = router.query
     const href = `/explore/commune/voie?codeCommune=${codeCommune}&idVoie=${idVoie}${numero ? `&numero=${numero}${suffixe || ''}` : ''}`
     const as = `/explore/commune/${codeCommune}/voie/${idVoie}${numero ? `/numero/${numero}${suffixe || ''}` : ''}`
 
-    Router.push(href, as)
+    router.push(href, as)
   }
 
   return (
